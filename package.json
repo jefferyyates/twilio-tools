@@ -1,9 +1,10 @@
 {
   "name": "twilio-tools",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "twilio:proxy:sessions": "node ./scripts/proxy/flexProxySessions.js"
+    "twilio:proxy:sessions": "node ./scripts/proxy/flexProxySessions.js",
+    "twilio:conversations:conversations": "node ./scripts/conversations/conversations.js"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
