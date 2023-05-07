@@ -40,7 +40,7 @@ npm install
 
 ## Proxy: Sessions
 
-`/scripts/voice/flexProxySessions.js`
+`/scripts/proxy/flexProxySessions.js`
 
 Uses the Proxy Sessions API to create or modify the status on Flex Proxy Sessions.
 
@@ -60,4 +60,28 @@ Update ALL sessions to the indicated status value.  The only acceptable options 
 
 ```
 npm run twilio:proxy:sessions -- --newStatus=closed
+```
+
+## Conversations: Conversations
+
+`/scripts/conversations/conversations.js`
+
+Uses the Conversations API to list or delete Conversations resources.
+
+```
+npm run twilio:conversations:conversations --
+```
+
+### Examples
+
+List all existing Conversations resources in the account.  Useful for testing.
+
+```
+npm run twilio:conversations:conversations --
+```
+
+Delete ALL conversation resources.  This operation cannot be undone.
+
+```
+npm run twilio:prconversationsoxy:conversations -- --deleteAll=true
 ```
