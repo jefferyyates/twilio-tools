@@ -3,33 +3,59 @@ const fs = require("fs");
 const Twilio = require("twilio");
 const args = require('yargs')(process.argv.slice(2))
     .string('deleteAll')
-    .usage('Usage: $0 --deleteAll=true|false')
+    .string('setStatusAll')
+    .usage('Usage: $0 --deleteAll=true|false --setStatusAll=closed|inactive|active')
     .describe('deleteAll', '(Optional) Is false if not provided. Deletes all Conversations Resources')
     .default('deleteAll', "false")
+    .describe('setStatusAll', '(Optional) New status value for all conversations (closed|inactive|active)')
     .argv;
 
 const accountSid = process.env.TWILIO_ACCT_SID;
 const authToken = process.env.TWILIO_ACCT_AUTH;
-const proxySid = process.env.TWILIO_FLEX_PROXY_SERVICE_SID;
 const client = Twilio(accountSid, authToken);
+
+async function updateConversationStatus(conversationList, newStatus) {
+    // Use for loop to sequentially create sessions
+    // (slow, but avoids hammering API and getting 'Too many requests' errors)
+    let updatedCount = 0;
+    for (let i = 0; i < conversationList.length; i++) {
+
+        if(conversationList[i].state != 'closed') {
+            console.log("updating", conversationList[i].sid, conversationList[i].state, "->", newStatus);
+            await client
+                .conversations
+                .v1
+                .conversations(conversationList[i].sid)
+                .update({state: newStatus});
+            updatedCount++
+        }
+    }
+    console.log("+", updatedCount, "updated +");
+}
 
 async function deleteConversations(conversationList) {
     // Use for loop to sequentially create sessions
     // (slow, but avoids hammering API and getting 'Too many requests' errors)
-    for (let i = 0; i < conversationList; i++) {
+    let removedCount = 0;
+
+    for (let i = 0; i < conversationList.length; i++) {
+        console.log("removing", conversationList[i].sid, i);
+
         await client
             .conversations
             .v1
             .conversations(conversationList[i].sid)
             .remove();
+
+        removedCount++;
     }
-    console.log("+", conversationList.length, "deleted +");
+    console.log("+", removedCount, "deleted +");
 }
 
 async function outputConversations() {
 
     // Get all conversations
-    const conversations = await await client
+    const conversations = await client
         .conversations.v1.conversations
         .list();
 
@@ -43,8 +69,8 @@ async function outputConversations() {
         try {
             const conversation = await client
                 .conversations.v1.conversations(conversations[x].sid)
-                .fetch(conversations[x].sid);
-            console.log("Conversation: ", conversation.sid, conversation.friendlyName)
+                .fetch();
+            console.log("Conversation: ", conversation.sid, conversation.state)
         }
         catch(e) {
             errorCount++;
@@ -56,11 +82,14 @@ async function outputConversations() {
 
 
 const deleteAll = args.deleteAll;
+const newStatus = args.setStatusAll;
 
 outputConversations().then(convoList =>{
-    console.log(convoList);
+    if(newStatus) {
+        updateConversationStatus(convoList, newStatus);
+    }
     if(deleteAll == "true") {
         deleteConversations(convoList);
-    }    
+    }
 });
 

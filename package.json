@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "twilio:proxy:sessions": "node ./scripts/proxy/flexProxySessions.js",
-    "twilio:conversations:conversations": "node ./scripts/conversations/conversations.js"
+    "twilio:conversations:conversations": "node ./scripts/conversations/conversations.js",
+    "twilio:conversations:participantConversations": "node ./scripts/conversations/participantConversations.js"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
