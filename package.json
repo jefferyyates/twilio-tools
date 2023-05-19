@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "twilio:taskrouter:workers": "node ./scripts/taskrouter/workers.js",
     "twilio:proxy:sessions": "node ./scripts/proxy/flexProxySessions.js",
     "twilio:conversations:conversations": "node ./scripts/conversations/conversations.js",
     "twilio:conversations:participantConversations": "node ./scripts/conversations/participantConversations.js"
